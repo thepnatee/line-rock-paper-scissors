@@ -7,7 +7,6 @@ const {
 initializeApp();
 
 const db = getFirestore();
-const userDb = db.collection("user")
 const gameDb = db.collection("game")
 
 
@@ -30,11 +29,9 @@ exports.createGame = async (userId, groupId) => {
 
 }
 
-// /*  delete Member by userId and  groupId */
 exports.deleteUserGroup = async (userId, groupId) => {
-
-  let userDocument = userDb.where("groupId", "==", groupId).where("userId", "==", userId)
-  await userDocument.get().then(function (querySnapshot) {
+  const gameDocument = gameDb.where("groupId", "==", groupId).where("userId", "==", userId)
+  await gameDocument.get().then(function (querySnapshot) {
     querySnapshot.forEach(function (doc) {
       doc.ref.delete();
     });
@@ -42,11 +39,9 @@ exports.deleteUserGroup = async (userId, groupId) => {
 
 }
 
-// /*  delete Group by groupId */
 exports.deleteGameGroup = async (groupId) => {
-
-  let userDocument = gameDb.where("groupId", "==", groupId)
-  await userDocument.get().then(function (querySnapshot) {
+  const gameDocument = gameDb.where("groupId", "==", groupId)
+  await gameDocument.get().then(function (querySnapshot) {
     querySnapshot.forEach(function (doc) {
       doc.ref.delete();
     });
@@ -55,8 +50,8 @@ exports.deleteGameGroup = async (groupId) => {
 }
 exports.deleteGameUserId = async (groupId, userId) => {
 
-  let userDocument = gameDb.where("groupId", "==", groupId).where('ownerId', '==', userId)
-  await userDocument.get().then(function (querySnapshot) {
+  let gameDocument = gameDb.where("groupId", "==", groupId).where('ownerId', '==', userId)
+  await gameDocument.get().then(function (querySnapshot) {
     querySnapshot.forEach(function (doc) {
       doc.ref.delete();
     });
@@ -136,23 +131,23 @@ exports.updateInsertJoinerSelect = async (groupId, gameId, item, userId) => {
       .get();
     for (const doc of querySnapshot.docs) {
 
-
-      if (doc.id === gameId) {
-
+      if (doc.id === gameId && doc.data().ownerId !== userId) {
         let userlistItem = doc.data().users
-
         const dataLength = Object.keys(userlistItem).length;
         let arrayData = userlistItem
         if (dataLength !== 0) {
-          for (const [index, userObject] of userlistItem.entries()) {
-            const memberId = Object.keys(userObject)[index];
-
+          for (const userObject of userlistItem.entries()) {
+            const memberId = Object.keys(userObject)[0];
+            console.log("memberId", memberId);
+            console.log("userId", userId);
             if (userId !== memberId) {
               const newData = {
                 [userId]: item,
               };
 
               arrayData.push(newData)
+              console.log(arrayData);
+
               await gameDb.doc(doc.id).update({
                 users: arrayData,
               });
@@ -172,7 +167,7 @@ exports.updateInsertJoinerSelect = async (groupId, gameId, item, userId) => {
 
       }
 
-      return true;
+      return false;
     }
   } catch (error) {
     return false;

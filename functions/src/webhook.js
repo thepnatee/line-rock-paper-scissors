@@ -21,17 +21,27 @@ exports.receive = onRequest(async (req, res) => {
         const userId = event.source.userId
         const groupId = event.source.groupId
 
+        // Check Using LINE Chatbot with LINE Group Only
         if (event.source.type !== "group") {
             return res.end();
         }
+
+        // Invite LINE Offcial Account : เป้ายิ้งฉุบ
+        // [IMPORTANT] Enable Toggle : Feature Allow account to join groups and multi-person chats
+        // https://developers.line.biz/en/reference/messaging-api/#join-event
         if (event.type === "join") {
             await line.reply(event.replyToken, [messages.textMessageQuickReply("สวัสดี ทุกคน มาเริ่มเกมส์เป้ายิ้งฉุบกันนน \n ถ้าทุกคนพร้อมแล้วไปดู กติกา กันก่อน ")])
             return res.end();
         }
+
+        // Invite User Player 
+        // https://developers.line.biz/en/reference/messaging-api/#member-joined-event
         if (event.type === "memberJoined") {
             for (let member of event.joined.members) {
                 if (member.type === "user") {
+                    // DB Query for Game Start 
                     const count = await firebase.getCountGameGroupStatus(groupId, false)
+                    // Check Status Playing 
                     if (count === 0) {
                         await line.reply(event.replyToken, [messages.textMessageQuickReply("ยินดีต้อนรับสมาชิกใหม่ กด 'เข้าร่วม' เพื่อทักทายทุกคนและ เข้าร่วมเกมส์ ")])
                     } else {
@@ -42,7 +52,9 @@ exports.receive = onRequest(async (req, res) => {
             return res.end();
         }
 
+        // https://developers.line.biz/en/reference/messaging-api/#leave-event
         if (event.type === "leave") {
+            // Delete Game Document when LINE OA Leave Group
             await firebase.deleteGameGroup(groupId)
             return res.end();
         }
@@ -60,6 +72,7 @@ exports.receive = onRequest(async (req, res) => {
                 await firebase.deleteGameGroup(groupId)
                 await line.reply(event.replyToken, [messages.textMessageQuickReplyGame(`ระบบได้ลบเกมส์ของ ${lineProfile.data.displayName} เรียบร้อย`)])
             } else if (textMessage === "สร้างเกมส์") {
+                // Check Duplicate for Create Game 
                 const count = await firebase.getCountGameGroupStatus(groupId, false)
                 if (count === 0) {
                     const resultId = await firebase.createGame(userId, groupId)
@@ -74,7 +87,6 @@ exports.receive = onRequest(async (req, res) => {
         if (event.type === "postback") {
 
             const data = JSON.parse(event.postback.data)
-
 
             if (data.item === "rock" || data.item === "paper" || data.item === "scissors") {
                 const checkGameStatus = await firebase.getCheckGameGroupStatus(groupId, data.gameId)
