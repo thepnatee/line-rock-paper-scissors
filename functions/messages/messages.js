@@ -60,6 +60,8 @@ const quickReplyGame = {
 }
 
 
+
+
 exports.textMessageQuickReply = (text) => {
     return {
         "type": "text",
@@ -73,6 +75,35 @@ exports.textMessageQuickReplyGame = (text) => {
         "type": "text",
         "text": text,
         "quickReply": quickReplyGame
+    }
+
+};
+exports.textMessageEndGame = (text) => {
+    return {
+        "type": "text",
+        "text": text,
+        "quickReply": {
+            "items": [
+                {
+                    "type": "action",
+                    "imageUrl": "https://bucket.ex10.tech/images/8d325cbc-d31f-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                    "action": {
+                        "type": "message",
+                        "label": "สร้างเกมส์",
+                        "text": "สร้างเกมส์"
+                    }
+                },
+                {
+                    "type": "action",
+                    "imageUrl": "https://bucket.ex10.tech/images/871f88ff-d3b0-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                    "action": {
+                        "type": "message",
+                        "label": "ล้างเกมส์ของคุณ",
+                        "text": "ล้างเกมส์ของคุณ"
+                    }
+                }
+            ]
+        }
     }
 
 };
@@ -92,118 +123,109 @@ exports.selectMessage = (userId, groupId, gameId) => {
         "type": "flex",
         "altText": "โปรดเลือกให้ดี",
         "contents": {
-          "type": "carousel",
-          "contents": [
-            {
-              "type": "bubble",
-              "size": "micro",
-              "hero": {
-                "type": "image",
-                "url": "https://bucket.ex10.tech/images/70100a27-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
-                "size": "full",
-                "aspectMode": "cover",
-                "aspectRatio": "320:213"
-              },
-              "body": {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "กระดาษ",
-                      "data": `{"userId": "${userId}", "item": "paper", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+            "type": "carousel",
+            "contents": [{
+                    "type": "bubble",
+                    "size": "micro",
+                    "hero": {
+                        "type": "image",
+                        "url": "https://bucket.ex10.tech/images/70100a27-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                        "size": "full",
+                        "aspectMode": "cover",
+                        "aspectRatio": "320:213"
                     },
-                    "style": "primary",
-                    "color": "#050505"
-                  }
-                ],
-                "spacing": "sm",
-                "paddingAll": "13px"
-              }
-            },
-            {
-              "type": "bubble",
-              "size": "micro",
-              "hero": {
-                "type": "image",
-                "url": "https://bucket.ex10.tech/images/7a5057bc-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
-                "size": "full",
-                "aspectMode": "cover",
-                "aspectRatio": "320:213"
-              },
-              "body": {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "กรรไกร",
-                      "data": `{"userId": "${userId}", "item": "scissors", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [{
+                            "type": "button",
+                            "action": {
+                                "type": "postback",
+                                "label": "กระดาษ",
+                                "data": `{"userId": "${userId}", "item": "paper", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+                            },
+                            "style": "primary",
+                            "color": "#050505"
+                        }],
+                        "spacing": "sm",
+                        "paddingAll": "13px"
+                    }
+                },
+                {
+                    "type": "bubble",
+                    "size": "micro",
+                    "hero": {
+                        "type": "image",
+                        "url": "https://bucket.ex10.tech/images/7a5057bc-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                        "size": "full",
+                        "aspectMode": "cover",
+                        "aspectRatio": "320:213"
                     },
-                    "style": "primary",
-                    "color": "#050505"
-                  }
-                ],
-                "spacing": "sm",
-                "paddingAll": "13px"
-              }
-            },
-            {
-              "type": "bubble",
-              "size": "micro",
-              "hero": {
-                "type": "image",
-                "url": "https://bucket.ex10.tech/images/84873b75-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
-                "size": "full",
-                "aspectMode": "cover",
-                "aspectRatio": "320:213"
-              },
-              "body": {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "ค้อน",
-                      "data": `{"userId": "${userId}", "item": "rock", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [{
+                            "type": "button",
+                            "action": {
+                                "type": "postback",
+                                "label": "กรรไกร",
+                                "data": `{"userId": "${userId}", "item": "scissors", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+                            },
+                            "style": "primary",
+                            "color": "#050505"
+                        }],
+                        "spacing": "sm",
+                        "paddingAll": "13px"
+                    }
+                },
+                {
+                    "type": "bubble",
+                    "size": "micro",
+                    "hero": {
+                        "type": "image",
+                        "url": "https://bucket.ex10.tech/images/84873b75-d45a-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                        "size": "full",
+                        "aspectMode": "cover",
+                        "aspectRatio": "320:213"
                     },
-                    "style": "primary",
-                    "color": "#050505"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "bubble",
-              "size": "micro",
-              "body": {
-                "type": "box",
-                "layout": "vertical",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                        "type": "postback",
-                        "label": "จบเกมส์",
-                        "displayText": "จบเกมส์",
-                        "data": `{"userId":"${userId}", "item": "endgame","gameId":"${gameId}"}`
-                    },
-                    "color": "#ff0026"
-                  }
-                ],
-                "alignItems": "center",
-                "justifyContent": "center"
-              }
-            }
-          ]
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [{
+                            "type": "button",
+                            "action": {
+                                "type": "postback",
+                                "label": "ค้อน",
+                                "data": `{"userId": "${userId}", "item": "rock", "gameId": "${gameId}" , "groupId": "${groupId}"}`
+                            },
+                            "style": "primary",
+                            "color": "#050505"
+                        }]
+                    }
+                },
+                {
+                    "type": "bubble",
+                    "size": "micro",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [{
+                            "type": "button",
+                            "action": {
+                                "type": "postback",
+                                "label": "จบเกมส์",
+                                "displayText": "จบเกมส์",
+                                "data": `{"userId":"${userId}", "item": "endgame","gameId":"${gameId}"}`
+                            },
+                            "color": "#ff0026"
+                        }],
+                        "alignItems": "center",
+                        "justifyContent": "center"
+                    }
+                }
+            ]
         }
-      }
+    }
 
 };
 

@@ -93,16 +93,24 @@ exports.receive = onRequest(async (req, res) => {
 
                 if (checkGameStatus) {
                     const result = await firebase.updateInsertOwnerSelect(groupId, data.gameId, data.item, userId)
-
                     if (result) {
                         if (result === "done") {
                             await line.reply(event.replyToken, [messages.textMessage("ตอนนี้ ผู้สร้างห้องได้ทำการเลือกแล้ว ทุกคนรีบเลือกด่วน!")])
+                        } else {
+                            await line.reply(event.replyToken, [messages.textMessage("ถึงแม้เป็น ผู้สร้างห้องก็เปลี่ยนใจไม่ได้!")])
                         }
                         return res.end();
                     } else {
+
+                        const result = await firebase.updateInsertJoinerSelect(groupId, data.gameId, data.item, userId)
+
                         const lineProfile = await line.getProfileGroup(groupId, userId)
-                        await firebase.updateInsertJoinerSelect(groupId, data.gameId, data.item, userId)
-                        await line.reply(event.replyToken, [messages.textMessage(`ขณะนี้ ${lineProfile.data.displayName} ได้ทำการเลือกแล้ว!`)])
+
+                        let msgMemberSelect = `ขณะนี้ ${lineProfile.data.displayName} ได้ทำการเลือกแล้ว!`
+                        if (!result) {
+                            msgMemberSelect = `คุณ ${lineProfile.data.displayName} ไม่สามารถเปลี่ยนใจได้`
+                        }
+                        await line.reply(event.replyToken, [messages.textMessage(msgMemberSelect)])
                     }
                 }
 
@@ -110,62 +118,63 @@ exports.receive = onRequest(async (req, res) => {
             }
             if (data.item === "endgame") {
                 const result = await firebase.endGame(groupId, userId, data.gameId)
+
                 if (result) {
 
-                    const dataItem = await firebase.getUserByGame(groupId, data.gameId, userId)
-                    let userWin = []
-                    let userEqual = []
-                    let userLoss = []
-                    let ownerLineProfile = await line.getProfileGroup(groupId, userId)
-                    for (const [index, userObject] of dataItem.users.entries()) {
-                        let memberId = Object.keys(userObject)[0];
-                        let lineProfile = await line.getProfileGroup(groupId, memberId)
+                    const dataItem = await firebase.getUserByGame(groupId, data.gameId, userId);
 
-                        if ((userObject[memberId] === 'rock' && dataItem.ownerSelect === 'scissors') ||
-                            (userObject[memberId] === 'paper' && dataItem.ownerSelect === 'rock') ||
-                            (userObject[memberId] === 'scissors' && dataItem.ownerSelect === 'paper')) {
-                            userWin.push(lineProfile.data)
-                        } else if (
-                            (userObject[memberId] === 'rock' && dataItem.ownerSelect === 'rock') ||
-                            (userObject[memberId] === 'paper' && dataItem.ownerSelect === 'paper') ||
-                            (userObject[memberId] === 'scissors' && dataItem.ownerSelect === 'scissors')
-                        ) {
-                            userEqual.push(lineProfile.data)
+                    let userWin = [];
+                    let userEqual = [];
+                    let userLoss = [];
 
-                        } else {
-                            userLoss.push(lineProfile.data)
-                        }
-                    }
+                    const ownerLineProfile = await line.getProfileGroup(groupId, userId);
 
                     if (!dataItem.ownerSelect || dataItem.users.length === 0) {
                         await line.reply(event.replyToken, [messages.textMessageQuickReplyGame("เกมส์ได้สิ้นสุดลง แบบไม่สมบูรณ์ กรุณาเริ่มต้นเกมส์ใหม่อีกครั้ง")]);
                     } else {
-                        let memberNo = 1
-                        let nameList = 'ผู้สร้างห้อง ' + ownerLineProfile.data.displayName + ' เลือก ' + dataItem.ownerSelect
-                        if (userWin.length > 0) {
-                            nameList += "\n-----ผู้ชนะได้แก่----- "
-                            userWin.forEach((memberList) => {
-                                nameList += " \n " + memberNo + "." + memberList.displayName + " ✅"
-                                memberNo++
-                            });
-                        }
-                         if (userEqual.length > 0) {
-                            nameList += "\n-----ผู้เสมอได้แก่----- "
-                            userEqual.forEach((memberList) => {
-                                nameList += " \n " + memberNo + "." + memberList.displayName + " 😉"
-                                memberNo++
-                            });
-                        } 
-                        if(userLoss.length > 0) {
-                            nameList += "\n-----ผู้แพ้ได้แก่----- "
-                            userLoss.forEach((memberList) => {
-                                nameList += " \n " + memberNo + "." + memberList.displayName + " ❌"
-                                memberNo++
-                            });
+                        let memberNo = 1;
+                        let nameList = 'ผู้สร้างห้อง ' + ownerLineProfile.data.displayName + ' เลือก ' + dataItem.ownerSelect;
+
+                        for (const userObject of dataItem.users) {
+                            const memberId = Object.keys(userObject)[0];
+
+                            const lineProfile = await line.getProfileGroup(groupId, memberId);
+
+                            const userSelection = userObject[memberId];
+                            const ownerSelection = dataItem.ownerSelect;
+
+                            if (userSelection === ownerSelection) {
+                                userEqual.push(lineProfile.data);
+                            } else {
+                                const userWinsAgainst = {
+                                    'rock': 'scissors',
+                                    'paper': 'rock',
+                                    'scissors': 'paper'
+                                };
+
+                                if (userWinsAgainst[userSelection] === ownerSelection) {
+                                    userWin.push(lineProfile.data);
+                                } else {
+                                    userLoss.push(lineProfile.data);
+                                }
+                            }
                         }
 
-                        nameList += "\n------ \n "
-                        nameList += "แพ้เป็นพระ คนชนะคนนี้เป็นของเธอนะ"
+                        const appendUsers = (list, label, emoji) => {
+                            if (list.length > 0) {
+                                nameList += `\n-----${label}-----`;
+                                list.forEach((memberList) => {
+                                    nameList += `\n ${memberNo}.${memberList.displayName} ${emoji}`;
+                                    memberNo++;
+                                });
+                            }
+                        };
+
+                        appendUsers(userWin, "ผู้ชนะได้แก่", "✅");
+                        appendUsers(userEqual, "ผู้เสมอได้แก่", "😉");
+                        appendUsers(userLoss, "ผู้แพ้ได้แก่", "❌");
+
+                        nameList += "\n------ \nแพ้เป็นพระ คนชนะคนนี้เป็นของเธอนะ";
 
                         await line.reply(event.replyToken, [messages.textMessageQuickReply(nameList)]);
                     }
