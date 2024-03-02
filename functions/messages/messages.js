@@ -83,14 +83,39 @@ exports.textMessageEndGame = (text) => {
         "type": "text",
         "text": text,
         "quickReply": {
-            "items": [
-                {
+            "items": [{
+                    "type": "action",
+                    "imageUrl": "https://bucket.ex10.tech/images/9f2a63dc-d84e-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                    "action": {
+                        "type": "clipboard",
+                        "label": "สรุปผลการแข่งขัน",
+                        "clipboardText": text
+                    }
+                }, {
                     "type": "action",
                     "imageUrl": "https://bucket.ex10.tech/images/8d325cbc-d31f-11ee-97d4-0242ac12000b/originalContentUrl.png",
                     "action": {
                         "type": "message",
-                        "label": "สร้างเกมส์",
-                        "text": "สร้างเกมส์"
+                        "label": "เข้าร่วม",
+                        "text": "เข้าร่วม"
+                    }
+                },
+                {
+                    "type": "action",
+                    "imageUrl": "https://bucket.ex10.tech/images/c29daf78-d323-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                    "action": {
+                        "type": "message",
+                        "label": "กติกา",
+                        "text": "กติกา"
+                    }
+                },
+                {
+                    "type": "action",
+                    "imageUrl": "https://bucket.ex10.tech/images/bdbdcdd7-d381-11ee-97d4-0242ac12000b/originalContentUrl.png",
+                    "action": {
+                        "type": "message",
+                        "label": "เริ่มเกมส์",
+                        "text": "เริ่มเกมส์"
                     }
                 },
                 {
@@ -218,6 +243,11 @@ exports.selectMessage = (userId, groupId, gameId) => {
                                 "data": `{"userId":"${userId}", "item": "endgame","gameId":"${gameId}"}`
                             },
                             "color": "#ff0026"
+                        }, {
+                            "type": "text",
+                            "text": "(เฉพาะผู้สร้างเกมส์)",
+                            "size": "12px",
+                            "color": "#fc030f"
                         }],
                         "alignItems": "center",
                         "justifyContent": "center"

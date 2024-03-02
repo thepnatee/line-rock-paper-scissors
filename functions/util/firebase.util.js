@@ -139,26 +139,26 @@ exports.updateInsertJoinerSelect = async (groupId, gameId, item, userId) => {
         const dataLength = Object.keys(userlistItem).length;
 
         let arrayData = userlistItem
-
-        if (dataLength > 0 ) {
-
+        if (dataLength > 0) {
+          let memberList = []
           for (const [index, userObject] of userlistItem.entries()) {
-            let memberId = Object.keys(userObject)[index];
-            if (userId !== memberId) {
-              const newData = {
-                [userId]: item,
-              };
-
-              arrayData.push(newData)
-
-              await gameDb.doc(doc.id).update({
-                users: arrayData,
-              });
-              return true;
-            } else {
-              return false;
-            }
+            let memberId = Object.keys(userObject)[0];
+            memberList.push(memberId)
           }
+          const hasValue = memberList.some(e => e === userId);
+          if (!hasValue) {
+            const newData = {
+              [userId]: item,
+            };
+            arrayData.push(newData)
+            await gameDb.doc(doc.id).update({
+              users: arrayData,
+            });
+            return true;
+          } else {
+            return false;
+          }
+
         } else {
 
           const newData = {
@@ -174,10 +174,10 @@ exports.updateInsertJoinerSelect = async (groupId, gameId, item, userId) => {
 
       }
 
-      return false;
+      // return false;
     }
   } catch (error) {
-    return false;
+    // return false;
   }
 };
 
@@ -187,7 +187,6 @@ exports.getCountGameGroupStatus = async (groupId, status) => {
   return gameCount.data().count
 }
 exports.getCheckGameGroupStatus = async (groupId, gameId) => {
-
   const querySnapshot = await gameDb
     .where('groupId', '==', groupId)
     .where('endgame', '==', false)
@@ -197,7 +196,6 @@ exports.getCheckGameGroupStatus = async (groupId, gameId) => {
     .where('endgame', '==', false)
   const gameCount = await gameDocument.count().get()
   if (gameCount.data().count > 0) {
-
     for (const doc of querySnapshot.docs) {
       if (doc.id === gameId) {
         return true;

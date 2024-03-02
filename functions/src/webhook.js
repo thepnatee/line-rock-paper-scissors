@@ -90,20 +90,18 @@ exports.receive = onRequest(async (req, res) => {
 
             if (data.item === "rock" || data.item === "paper" || data.item === "scissors") {
                 const checkGameStatus = await firebase.getCheckGameGroupStatus(groupId, data.gameId)
-
                 if (checkGameStatus) {
                     const result = await firebase.updateInsertOwnerSelect(groupId, data.gameId, data.item, userId)
                     if (result) {
                         if (result === "done") {
                             await line.reply(event.replyToken, [messages.textMessage("ตอนนี้ ผู้สร้างห้องได้ทำการเลือกแล้ว ทุกคนรีบเลือกด่วน!")])
                         } else {
-                            await line.reply(event.replyToken, [messages.textMessage("ถึงแม้เป็น ผู้สร้างห้องก็เปลี่ยนใจไม่ได้!")])
+                            await line.reply(event.replyToken, [messages.textMessage("ถึงแม้เป็น ผู้สร้างห้อง ก็เปลี่ยนใจไม่ได้!")])
                         }
                         return res.end();
                     } else {
 
                         const result = await firebase.updateInsertJoinerSelect(groupId, data.gameId, data.item, userId)
-
                         const lineProfile = await line.getProfileGroup(groupId, userId)
 
                         let msgMemberSelect = `ขณะนี้ ${lineProfile.data.displayName} ได้ทำการเลือกแล้ว!`
@@ -133,8 +131,6 @@ exports.receive = onRequest(async (req, res) => {
                         await line.reply(event.replyToken, [messages.textMessageQuickReplyGame("เกมส์ได้สิ้นสุดลง แบบไม่สมบูรณ์ กรุณาเริ่มต้นเกมส์ใหม่อีกครั้ง")]);
                     } else {
                         let memberNo = 1;
-                        let nameList = 'ผู้สร้างห้อง ' + ownerLineProfile.data.displayName + ' เลือก ' + dataItem.ownerSelect;
-
                         for (const userObject of dataItem.users) {
                             const memberId = Object.keys(userObject)[0];
 
@@ -145,6 +141,7 @@ exports.receive = onRequest(async (req, res) => {
 
                             if (userSelection === ownerSelection) {
                                 userEqual.push(lineProfile.data);
+
                             } else {
                                 const userWinsAgainst = {
                                     'rock': 'scissors',
@@ -154,12 +151,16 @@ exports.receive = onRequest(async (req, res) => {
 
                                 if (userWinsAgainst[userSelection] === ownerSelection) {
                                     userWin.push(lineProfile.data);
+
                                 } else {
                                     userLoss.push(lineProfile.data);
                                 }
                             }
                         }
 
+
+
+                        let nameList = 'ผู้สร้างห้อง ' + ownerLineProfile.data.displayName + ' เลือก ' + dataItem.ownerSelect;
                         const appendUsers = (list, label, emoji) => {
                             if (list.length > 0) {
                                 nameList += `\n-----${label}-----`;
@@ -176,7 +177,7 @@ exports.receive = onRequest(async (req, res) => {
 
                         nameList += "\n------ \nแพ้เป็นพระ คนชนะคนนี้เป็นของเธอนะ";
 
-                        await line.reply(event.replyToken, [messages.textMessageQuickReply(nameList)]);
+                        await line.reply(event.replyToken, [messages.textMessageEndGame(nameList)]);
                     }
 
 
