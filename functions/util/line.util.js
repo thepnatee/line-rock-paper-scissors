@@ -20,7 +20,7 @@ exports.getProfile = async (userId) => {
             },
         })
     } catch (error) {
-        console.error("Error : ", error.data);
+        console.error("Error getProfile : ", error.data);
     }
 
 
@@ -37,15 +37,13 @@ exports.getProfileGroup = (groupId, userId) => {
             url: `${LINE_MESSAGING_API}/group/${groupId}/member/${userId}`
         });
     } catch (error) {
-        console.error("Error : ", error.data);
+        console.error("Error getProfileGroup : ", error.data);
     }
 };
 
 
 
 exports.reply = async (token, payload) => {
-
-
 
     try {
         return await axios({
@@ -61,7 +59,7 @@ exports.reply = async (token, payload) => {
             })
         });
     } catch (error) {
-        console.error("Error : ", error.data);
+        console.error("Error reply : ", error.data);
     }
 
 };

@@ -58,7 +58,7 @@ exports.deleteGameUserId = async (groupId, userId) => {
   });
 
 }
-exports.endGame = async (groupId, userId, gameId) => {
+exports.endGame = async (groupId, userId) => {
 
   try {
 
@@ -174,10 +174,10 @@ exports.updateInsertJoinerSelect = async (groupId, gameId, item, userId) => {
 
       }
 
-      // return false;
+      return false;
     }
   } catch (error) {
-    // return false;
+    return false;
   }
 };
 
