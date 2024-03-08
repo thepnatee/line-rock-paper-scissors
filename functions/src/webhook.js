@@ -26,11 +26,11 @@ exports.receive = onRequest(async (req, res) => {
             return res.end();
         }
 
-        // Invite LINE Offcial Account : เป้ายิ้งฉุบ
+        // Invite LINE Offcial Account : เป่ายิ้งฉุบ
         // [IMPORTANT] Enable Toggle : Feature Allow account to join groups and multi-person chats
         // https://developers.line.biz/en/reference/messaging-api/#join-event
         if (event.type === "join") {
-            await line.reply(event.replyToken, [messages.textMessageQuickReply("สวัสดี ทุกคน มาเริ่มเกมส์เป้ายิ้งฉุบกันนน \n ถ้าทุกคนพร้อมแล้วไปดู กติกา กันก่อน ")])
+            await line.reply(event.replyToken, [messages.textMessageQuickReply("สวัสดี ทุกคน มาเริ่มเกมเป่ายิ้งฉุบกันนน \n ถ้าทุกคนพร้อมแล้วไปดู กติกา กันก่อน ")])
             return res.end();
         }
 
@@ -44,10 +44,10 @@ exports.receive = onRequest(async (req, res) => {
                     const count = await firebase.getCountGameGroupStatus(groupId, false)
                     // If Games in the group haven't started yet
                     if (count === 0) {
-                        await line.reply(event.replyToken, [messages.textMessageQuickReply("ยินดีต้อนรับสมาชิกใหม่ กด 'เข้าร่วม' เพื่อทักทายทุกคนและ เข้าร่วมเกมส์ ")])
+                        await line.reply(event.replyToken, [messages.textMessageQuickReply("ยินดีต้อนรับสมาชิกใหม่ กด 'เข้าร่วม' เพื่อทักทายทุกคนและ เข้าร่วมเกม ")])
                     } else {
                         //  Game has begun.
-                        await line.reply(event.replyToken, [messages.textMessage("ยินดีต้อนรับสมาชิกใหม่ ขณะนี้เกมส์กำลังดำเนินการอยู่ กรุณารอรอบถัดไป")])
+                        await line.reply(event.replyToken, [messages.textMessage("ยินดีต้อนรับสมาชิกใหม่ ขณะนี้เกมกำลังดำเนินการอยู่ กรุณารอรอบถัดไป")])
                     }
                 }
             }
@@ -69,14 +69,14 @@ exports.receive = onRequest(async (req, res) => {
             if (textMessage === "กติกา") {
                 await line.reply(event.replyToken, [messages.ruleMessage()])
             } else if (textMessage === "เข้าร่วม") {
-                await line.reply(event.replyToken, [messages.textMessageQuickReply(`คุณ ${lineProfile.data.displayName}ได้เข้าร่วมเกมส์เรียบร้อยแล้ว `)])
-            } else if (textMessage === "เริ่มเกมส์") {
-                await line.reply(event.replyToken, [messages.textMessageQuickReplyGame("วรยุทธใต้หล้าตัดสินแพ้ชนะวัดที่ความเร็ว  \n เมื่อผู้สร้างพร้อมเกมส์ กด 'สร้างเกมส์' \n\n หากสร้างเกมส์แล้วจะไม่สามารถสร้างทับได้")])
-            } else if (textMessage === "ล้างเกมส์ของคุณ") {
+                await line.reply(event.replyToken, [messages.textMessageQuickReply(`คุณ ${lineProfile.data.displayName}ได้เข้าร่วมเกมเรียบร้อยแล้ว `)])
+            } else if (textMessage === "เริ่มเกม") {
+                await line.reply(event.replyToken, [messages.textMessageQuickReplyGame("วรยุทธใต้หล้าตัดสินแพ้ชนะวัดที่ความเร็ว  \n เมื่อผู้สร้างเกมพร้อม  กด 'สร้างเกม' \n\n หากสร้างเกมแล้วจะไม่สามารถสร้างทับได้")])
+            } else if (textMessage === "ล้างเกมของคุณ") {
                 // Function Clear Game all Status
                 await firebase.deleteGameUserId(groupId, userId)
-                await line.reply(event.replyToken, [messages.textMessageQuickReplyGame(`ระบบได้ลบเกมส์ของ ${lineProfile.data.displayName} เรียบร้อย`)])
-            } else if (textMessage === "สร้างเกมส์") {
+                await line.reply(event.replyToken, [messages.textMessageQuickReplyGame(`ระบบได้ลบเกมของ ${lineProfile.data.displayName} เรียบร้อย`)])
+            } else if (textMessage === "สร้างเกม") {
 
                 // If Game Running 
                 // Check Duplicate for Create Game 
@@ -85,7 +85,7 @@ exports.receive = onRequest(async (req, res) => {
                     const resultId = await firebase.createGame(userId, groupId)
                     await line.reply(event.replyToken, [messages.selectMessage(userId, groupId, resultId)])
                 } else {
-                    await line.reply(event.replyToken, [messages.textMessage("เกมส์ได้ถูกสร้างแล้วไม่สามารถสร้างทับกันได้")])
+                    await line.reply(event.replyToken, [messages.textMessage("เกมได้ถูกสร้างแล้วไม่สามารถสร้างทับกันได้")])
                 }
             }
             return res.end();
@@ -105,6 +105,7 @@ exports.receive = onRequest(async (req, res) => {
                 return res.end();
 
             }
+            
             // End Game 
             if (DPB.item === "endgame") {
 
@@ -172,7 +173,7 @@ async function endGame(DPB, groupId, userId, replyToken) {
 
         // Exception Error Game Fail
         if (!dataItem.ownerSelect || dataItem.users.length === 0) {
-            await line.reply(replyToken, [messages.textMessageQuickReplyGame("เกมส์ได้สิ้นสุดลง แบบไม่สมบูรณ์ กรุณาเริ่มต้นเกมส์ใหม่อีกครั้ง")]);
+            await line.reply(replyToken, [messages.textMessageQuickReplyGame("เกมได้สิ้นสุดลง แบบไม่สมบูรณ์ กรุณาเริ่มต้นเกมใหม่อีกครั้ง")]);
         } else {
 
             for (const userObject of dataItem.users) {
@@ -229,6 +230,6 @@ async function endGame(DPB, groupId, userId, replyToken) {
 
 
     } else {
-        await line.reply(replyToken, [messages.textMessage("ไม่พบสิทธิ์การจบเกมส์ของท่าน หรือ เกมส์นี้ที่ท่านเลือกอาจจบลงแล้ว")])
+        await line.reply(replyToken, [messages.textMessage("ไม่พบสิทธิ์การจบเกมของท่าน หรือ เกมนี้ที่ท่านเลือกอาจจบลงแล้ว")])
     }
 }

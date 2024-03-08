@@ -22,8 +22,8 @@ const quickReplyMember = {
             "imageUrl": "https://bucket.ex10.tech/images/bdbdcdd7-d381-11ee-97d4-0242ac12000b/originalContentUrl.png",
             "action": {
                 "type": "message",
-                "label": "เริ่มเกมส์",
-                "text": "เริ่มเกมส์"
+                "label": "เริ่มเกม",
+                "text": "เริ่มเกม"
             }
         },
         {
@@ -31,8 +31,8 @@ const quickReplyMember = {
             "imageUrl": "https://bucket.ex10.tech/images/871f88ff-d3b0-11ee-97d4-0242ac12000b/originalContentUrl.png",
             "action": {
                 "type": "message",
-                "label": "ล้างเกมส์ของคุณ",
-                "text": "ล้างเกมส์ของคุณ"
+                "label": "ล้างเกมของคุณ",
+                "text": "ล้างเกมของคุณ"
             }
         }
     ]
@@ -43,8 +43,8 @@ const quickReplyGame = {
             "imageUrl": "https://bucket.ex10.tech/images/8d325cbc-d31f-11ee-97d4-0242ac12000b/originalContentUrl.png",
             "action": {
                 "type": "message",
-                "label": "สร้างเกมส์",
-                "text": "สร้างเกมส์"
+                "label": "สร้างเกม",
+                "text": "สร้างเกม"
             }
         },
         {
@@ -52,8 +52,8 @@ const quickReplyGame = {
             "imageUrl": "https://bucket.ex10.tech/images/871f88ff-d3b0-11ee-97d4-0242ac12000b/originalContentUrl.png",
             "action": {
                 "type": "message",
-                "label": "ล้างเกมส์ของคุณ",
-                "text": "ล้างเกมส์ของคุณ"
+                "label": "ล้างเกมของคุณ",
+                "text": "ล้างเกมของคุณ"
             }
         }
     ]
@@ -114,8 +114,8 @@ exports.textMessageEndGame = (text) => {
                     "imageUrl": "https://bucket.ex10.tech/images/bdbdcdd7-d381-11ee-97d4-0242ac12000b/originalContentUrl.png",
                     "action": {
                         "type": "message",
-                        "label": "เริ่มเกมส์",
-                        "text": "เริ่มเกมส์"
+                        "label": "เริ่มเกม",
+                        "text": "เริ่มเกม"
                     }
                 },
                 {
@@ -123,8 +123,8 @@ exports.textMessageEndGame = (text) => {
                     "imageUrl": "https://bucket.ex10.tech/images/871f88ff-d3b0-11ee-97d4-0242ac12000b/originalContentUrl.png",
                     "action": {
                         "type": "message",
-                        "label": "ล้างเกมส์ของคุณ",
-                        "text": "ล้างเกมส์ของคุณ"
+                        "label": "ล้างเกมของคุณ",
+                        "text": "ล้างเกมของคุณ"
                     }
                 }
             ]
@@ -136,7 +136,7 @@ exports.textMessageEndGame = (text) => {
 exports.ruleMessage = () => {
     return {
         "type": "text",
-        "text": "มาดูวิธีการเล่นกัน\n1. รอจนสมาชิกพร้อม หรือ ครบทุกคน\n2. พิมพ์ เริ่มเกมส์ เพื่อเริ่มเกมส์ โดยทุกคนต้องเลือก ค้อน กรรไกร หรือ กระดาษ\n3. ผู้สร้างเกมส์ 1 คนต่อการ สร้างเกมส์ได้ 1 ครั้ง\n4. หากต้องการสร้างเกมส์ใหม่ต้องพิมพ์ จบเกมส์ ก่อนเสมอ\n5. เงื่อนไขการเล่น หรือ บทลงโทษเป็นไปตามผู้สร้างเกมส์กำหนด ขอให้สนุกกับเป้ายิ้งฉุบ",
+        "text": "มาดูวิธีการเล่นกัน\n1. รอจนสมาชิกพร้อม หรือ ครบทุกคน\n2. พิมพ์ เริ่มเกม เพื่อเริ่มเกม โดยทุกคนต้องเลือก ค้อน กรรไกร หรือ กระดาษ\n3. ผู้สร้างเกม 1 คนต่อการ สร้างเกมได้ 1 ครั้ง\n4. หากต้องการสร้างเกมใหม่ต้องพิมพ์ จบเกม ก่อนเสมอ\n5. เงื่อนไขการเล่น หรือ บทลงโทษเป็นไปตามผู้สร้างเกมกำหนด ขอให้สนุกกับเป่ายิ้งฉุบ",
         "quickReply": quickReplyMember
     }
 
@@ -238,14 +238,14 @@ exports.selectMessage = (userId, groupId, gameId) => {
                             "type": "button",
                             "action": {
                                 "type": "postback",
-                                "label": "จบเกมส์",
-                                "displayText": "จบเกมส์",
+                                "label": "จบเกม",
+                                "displayText": "จบเกม",
                                 "data": `{"userId":"${userId}", "item": "endgame","gameId":"${gameId}"}`
                             },
                             "color": "#ff0026"
                         }, {
                             "type": "text",
-                            "text": "(เฉพาะผู้สร้างเกมส์)",
+                            "text": "(เฉพาะผู้สร้างเกม)",
                             "size": "12px",
                             "color": "#fc030f"
                         }],

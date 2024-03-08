@@ -16,12 +16,12 @@ exports.createGame = async (userId, groupId) => {
   const gameCount = await gameDocument.count().get()
   if (gameCount.data().count === 0) {
     const result = await gameDb.add({
-      ownerId: userId,
-      groupId: groupId,
-      ownerSelect: false,
-      endgame: false,
-      users: [],
-      createAt: Date.now()
+      ownerId: userId, // userID ผู้สร้างเกม
+      groupId: groupId, // line group id
+      ownerSelect: false, // defualt ค่าเป็น false สำหรับเลือก ค้อน กรรไกร กระดาษ
+      endgame: false, // สถานะจบเกม
+      users: [], // user ผู้เข้าร่วม
+      createAt: Date.now() // เวลาสร้างเกม
     })
     return result.id
   }
