@@ -3,6 +3,7 @@ const {
 } = require("firebase-functions/v2/https");
 const line = require('../util/line.util');
 const messages = require('../messages/messages');
+const flex = require('../messages/flex');
 const firebase = require('../util/firebase.util');
 
 exports.receive = onRequest(async (req, res) => {
@@ -83,7 +84,7 @@ exports.receive = onRequest(async (req, res) => {
                 const count = await firebase.getCountGameGroupStatus(groupId, false)
                 if (count === 0) {
                     const resultId = await firebase.createGame(userId, groupId)
-                    await line.reply(event.replyToken, [messages.selectMessage(userId, groupId, resultId)])
+                    await line.reply(event.replyToken, [flex.selectMessage(userId, groupId, resultId)])
                 } else {
                     await line.reply(event.replyToken, [messages.textMessage("เกมได้ถูกสร้างแล้วไม่สามารถสร้างทับกันได้")])
                 }
@@ -167,7 +168,7 @@ async function endGame(DPB, groupId, userId, replyToken) {
 
         let userWin = [];
         let userEqual = [];
-        let userLoss = [];
+        let userLost = [];
 
         const ownerLineProfile = await line.getProfileGroup(groupId, userId);
 
@@ -201,7 +202,7 @@ async function endGame(DPB, groupId, userId, replyToken) {
 
                     } else {
                         // Is Losser
-                        userLoss.push(lineProfile.data);
+                        userLost.push(lineProfile.data);
                     }
                 }
             }
@@ -221,7 +222,7 @@ async function endGame(DPB, groupId, userId, replyToken) {
 
             appendUsers(userWin, "ผู้ชนะได้แก่", "✅");
             appendUsers(userEqual, "ผู้เสมอได้แก่", "😉");
-            appendUsers(userLoss, "ผู้แพ้ได้แก่", "❌");
+            appendUsers(userLost, "ผู้แพ้ได้แก่", "❌");
 
             nameList += "\n------ \nแพ้เป็นพระ คนชนะคนนี้เป็นของเธอนะ";
 
